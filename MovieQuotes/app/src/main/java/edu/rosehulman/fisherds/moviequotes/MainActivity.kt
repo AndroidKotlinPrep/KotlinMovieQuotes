@@ -1,12 +1,10 @@
 package edu.rosehulman.fisherds.moviequotes
 
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
-
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -22,8 +20,7 @@ class MainActivity : AppCompatActivity() {
         movie_quote_recycler_view.layoutManager = LinearLayoutManager(this)
 
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+            adapter.showAddEditDialog()
         }
     }
 

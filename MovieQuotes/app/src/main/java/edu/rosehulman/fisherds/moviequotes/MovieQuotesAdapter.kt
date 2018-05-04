@@ -1,11 +1,13 @@
 package edu.rosehulman.fisherds.moviequotes
 
 import android.content.Context
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import kotlinx.android.synthetic.main.dialog_add.view.*
 
 class MovieQuotesAdapter : RecyclerView.Adapter<MovieQuotesAdapter.MovieQuoteViewHolder> {
 
@@ -14,12 +16,6 @@ class MovieQuotesAdapter : RecyclerView.Adapter<MovieQuotesAdapter.MovieQuoteVie
 
     constructor(context: Context) {
         mContext = context
-        mMovieQuotes.add(MovieQuote("I'll be back!", "The Terminator"))
-        mMovieQuotes.add(MovieQuote("I'll be back!", "The Terminator"))
-        mMovieQuotes.add(MovieQuote("I'll be back!", "The Terminator"))
-        mMovieQuotes.add(MovieQuote("I'll be back!", "The Terminator"))
-        mMovieQuotes.add(MovieQuote("I'll be back!", "The Terminator"))
-        mMovieQuotes.add(MovieQuote("I'll be back!", "The Terminator"))
     }
 
     override fun getItemCount() = mMovieQuotes.size
@@ -39,13 +35,49 @@ class MovieQuotesAdapter : RecyclerView.Adapter<MovieQuotesAdapter.MovieQuoteVie
         notifyDataSetChanged()
     }
 
-    class MovieQuoteViewHolder : RecyclerView.ViewHolder {
+    fun removeMovieQuote(movieQuote: MovieQuote) {
+        mMovieQuotes.remove(movieQuote)
+        notifyDataSetChanged()
+    }
+
+    fun showAddEditDialog(movieQuote: MovieQuote? = null) {
+        val builder = AlertDialog.Builder(mContext)
+                .setTitle(if (movieQuote == null) "Add a movie quote" else "Edit the quote")
+        val view = LayoutInflater.from(mContext).inflate(R.layout.dialog_add, null)
+        builder.setView(view)
+        if (movieQuote != null) {
+        }
+        view.dialog_add_quote_text.setText(movieQuote?.quote)
+        view.dialog_add_movie_text.setText(movieQuote?.movie)
+        builder.setPositiveButton(android.R.string.ok, { dialog, whichButton ->
+            val newQuote = view.dialog_add_quote_text.text.toString()
+            val newMovie = view.dialog_add_movie_text.text.toString()
+            if (movieQuote == null) {
+                add(MovieQuote(newQuote, newMovie))
+            } else {
+                movieQuote.quote = newQuote
+                movieQuote.movie = newMovie
+                notifyDataSetChanged()
+            }
+        })
+        builder.show()
+    }
+
+    inner class MovieQuoteViewHolder : RecyclerView.ViewHolder {
          val quoteTextView: TextView
          val movieTextView: TextView
 
         constructor(itemView: View) : super(itemView) {
             quoteTextView = itemView.findViewById(R.id.quote_text_view)
             movieTextView = itemView.findViewById(R.id.movie_text_view)
+            itemView.setOnClickListener {
+                showAddEditDialog(mMovieQuotes[adapterPosition])
+            }
+
+            itemView.setOnLongClickListener {
+                removeMovieQuote(mMovieQuotes[adapterPosition])
+                true
+            }
         }
     }
 
